@@ -2,72 +2,68 @@
 ;;; Commentary:
 ;;; Code:
 
-;; benchmark-init
+;; benchmark-init - 性能分析，仅调试时建议启用
 (use-package benchmark-init
   :ensure t
-  :config (add-hook 'after-init-hook 'benchmark-init/deactivate))
+  :config
+  (add-hook 'after-init-hook #'benchmark-init/deactivate))
 
-;; Settings for company, auto-complete only for coding.
+;; company - 自动补全
 (use-package company
   :ensure t
   :hook (prog-mode . company-mode)
-  :config (setq company-show-quick-access 'left
-		company-minimum-prefix-length 1
-		company-format-margin-function nil))
+  :config
+  (setq company-show-quick-access 'left
+        company-minimum-prefix-length 1
+        company-idle-delay 0.2
+        company-format-margin-function nil))
 
-;; Settings for exec-path-from-shell
-;; fix the PATH environment variable issue
+;; exec-path-from-shell - 修正环境变量，仅 macOS/Linux GUI 下启用
 (use-package exec-path-from-shell
   :ensure t
-  :when (or (memq window-system '(mac ns x))
-	    (unless cabins-os-win
-	      (daemonp)))
-  :init (exec-path-from-shell-initialize))
+  :when (memq window-system '(mac ns x))
+  :init
+  (exec-path-from-shell-initialize))
 
-;; format all, formatter for almost languages
-;; great for programmers
-(use-package format-all :ensure t
-  ;; enable format on save with format-all-mode
-  :hook ((prog-mode . format-all-mode))
-  ;; 	   (format-all-mode . format-all-ensure-formatter))
-  ;; and bind a shortcut to manual format
-  :commands (format-all-buffer format-all-region-or-buffer format-all-mode)
-  :bind ("C-c f" . #'format-all-region-or-buffer))
+;; format-all - 自动格式化
+(use-package format-all
+  :ensure t
+  :hook (prog-mode . format-all-mode)
+  :config
+  (add-hook 'format-all-mode-hook #'format-all-ensure-formatter)
+  :bind ("C-c f" . format-all-region-or-buffer))
 
-;; iedit - edit same text in one buffer or region
+;; iedit - 批量编辑
 (use-package iedit
   :ensure t
   :bind ("C-;" . iedit-mode))
 
-;; move-dup, move/copy line or region
+;; move-dup - 行/区域移动复制，建议直接全局开启
 (use-package move-dup
   :ensure t
-  :hook (after-init . global-move-dup-mode))
+  :init
+  (global-move-dup-mode 1))
 
-;; Markdown file support
+;; markdown-mode
 (use-package markdown-mode
   :ensure t
   :mode (("README\\.md\\'" . gfm-mode)
-	 ("\\.md\\'" . markdown-mode)
-	 ("\\markdown\\'" . markdown-mode)))
+         ("\\.md\\'" . markdown-mode)))
 
-;; Protobuf file support
+;; protobuf-mode
 (use-package protobuf-mode
   :ensure t
-  :mode "\\.proto\\'")
+  :mode ("\\.proto\\'" . protobuf-mode))
 
-;; Run code
+;; quickrun
 (use-package quickrun
   :ensure t
   :commands (quickrun quickrun-region))
-  ;;:when (derived-mode-p 'prog-mode))
 
-;; HTTP Request
+;; restclient
 (use-package restclient
   :ensure t
-  :mode (("\\.http\\'" . restclient-mode)))
-
+  :mode ("\\.http\\'" . restclient-mode))
 
 (provide 'init-third-packages)
-
 ;;; init-third-packages.el ends here
