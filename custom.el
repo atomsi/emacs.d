@@ -9,7 +9,6 @@
 
 ;;; Code:
 
-
 (setq browse-url-browser-function 'browse-url-generic
       browse-url-generic-program "google-chrome")
 
@@ -28,7 +27,7 @@
 ;;;;;;;;;
 
 (require 'pyim)
-;; ;; 将 Emacs 默认输入法设置为 pyim.
+;; 将 Emacs 默认输入法设置为 pyim.
 (setq default-input-method "pyim")
 (setq pyim-page-length 5)
 
@@ -37,13 +36,11 @@
       '((:name "pyim-tsinghua" :file "~/.emacs.d/eim/pyim-tsinghua-dict.pyim")))
 (pyim-default-scheme 'quanpin)
 
-;; ;; 设置 pyim 是否使用云拼音
+;; 设置 pyim 是否使用云拼音
 (setq pyim-cloudim 'baidu)
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;
-;; ;; org-mode        ;;
+;; org-mode
 ;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package org-download
   :ensure t
@@ -75,7 +72,7 @@
 (setq org-todo-keywords
       '((sequence "TODO(t!)" "WAIT(w)" "|" "DONE(d!)" "CANCELED(c@/!)")))
 ;; to set the display size for jpg & png
-(setq org-image-actual-width nil);; 绑定键位
+(setq org-image-actual-width nil)
 (define-key global-map "\C-cc" 'org-capture)
 
 (eval-after-load 'ol
@@ -100,59 +97,51 @@
 (autoload 'notmuch "notmuch" "notmuch mail" t)
 
 (require 'org-download)
-;; Drag-and-drop to `dired`
 (add-hook 'dired-mode-hook 'org-download-enable)
 
 (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
-
 
 ;; EasyPG: it is enabled by init scripts
 (require 'epa-file)
 (epa-file-enable)
 
 (use-package org-roam
-  :ensure t ;; 自动安装
+  :ensure t
   :custom
-  (org-roam-directory "~/Sync/orgmod/roam") ;; 默认笔记目录, 提前手动创建好
-  (org-roam-dailies-directory "daily/") ;; 默认日记目录, 上一目录的相对路径
-  (org-roam-db-gc-threshold most-positive-fixnum) ;; 提高性能
+  (org-roam-directory "~/Sync/orgmod/roam")
+  (org-roam-dailies-directory "daily/")
+  (org-roam-db-gc-threshold most-positive-fixnum)
   :bind (("C-c n f" . org-roam-node-find)
          ("C-c n l" . org-roam-node-link)
          ("C-c n i" . org-roam-node-insert)
          ("C-c n c" . org-roam-capture)
-         ("C-c n b" . org-roam-buffer-toggle) ;; 显示后链窗口
-         ("C-c n u" . org-roam-ui-mode))      ;; 浏览器中可视化
+         ("C-c n b" . org-roam-buffer-toggle)
+         ("C-c n u" . org-roam-ui-mode))
   :bind-keymap
-  ("C-c n d" . org-roam-dailies-map) ;; 日记菜单
+  ("C-c n d" . org-roam-dailies-map)
   :config
-  (require 'org-roam-dailies)  ;; 启用日记功能
-  (org-roam-db-autosync-mode)) ;; 启动时自动同步数据库
+  (require 'org-roam-dailies)
+  (org-roam-db-autosync-mode))
 
-(require 'org-tempo);; enable the structure templates by <key->
+(require 'org-tempo)
 
 (use-package org-roam-ui
-  :ensure t ;; 自动安装
+  :ensure t
   :after org-roam
   :custom
-  (org-roam-ui-sync-theme t) ;; 同步 Emacs 主题
-  (org-roam-ui-follow t) ;; 笔记节点跟随
+  (org-roam-ui-sync-theme t)
+  (org-roam-ui-follow t)
   (org-roam-ui-update-on-save t))
+
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(lsp-python-ms anaconda-mode py-isort blacken pyenv-mode flycheck elpy pyim which-key restclient quickrun protobuf-mode move-dup markdown-mode iedit format-all  ellama company)))
+   '(lsp-python-ms anaconda-mode py-isort blacken pyenv-mode flycheck elpy pyim which-key restclient quickrun protobuf-mode move-dup markdown-mode iedit format-all ellama company)))
+
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
-;;Python Mode
+;; Python Mode
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; 安装并配置 elpy
@@ -160,70 +149,47 @@
   :ensure t
   :pin melpa
   :config
-  ;; 为所有 Python 文件启用 elpy 模式
+  ;; 兼容 python-mode 和 python-ts-mode
   (add-hook 'python-mode-hook (lambda () (elpy-mode)))
-  ;; 使用 flycheck 作为 elpy 的语法检查后端
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
+  (add-hook 'python-ts-mode-hook (lambda () (elpy-mode))))
 
-;; 安装并配置 company
-(use-package company
-  :ensure t
-  :config
-  ;; 全局启用 company 模式
-  (global-company-mode)
-  ;; 减少 company 模式的延迟
-  (setq company-idle-delay 0)
-  ;; 在候选列表中显示数字
-  (setq company-show-numbers t))
+;; 使用 flycheck 作为 elpy 的语法检查后端
+(add-hook 'elpy-mode-hook 'flycheck-mode)
+(add-hook 'python-ts-mode-hook 'flycheck-mode)
 
-;; 安装并配置 flycheck
-(use-package flycheck
-  :ensure t
-  :config
-  ;; 全局启用 flycheck 模式
-  (global-flycheck-mode))
-
-;; 安装并配置 pyenv
-(setenv "WORKON_HOME" "/home/tom/miniconda3/envs/")
-;; (use-package pyenv-mode
-;;   :ensure t
-;;   :config
-;;   ;; 启用 pyenv 模式
-;;   (pyenv-mode)
-;;   )
-
-
-;; 安装并配置 blacken
+;; 自动格式化
 (use-package blacken
   :ensure t
   :config
-  ;; 在保存 Python 文件之前自动格式化
   (add-hook 'before-save-hook #'blacken-buffer))
 
-;; 安装并配置 py-isort
+;; 自动排序导入
 (use-package py-isort
   :ensure t
   :config
-  ;; 在保存 Python 文件之前自动排序导入
   (add-hook 'before-save-hook #'py-isort-before-save))
 
-;; 安装并配置 anaconda-mode
+;; anaconda-mode
 (use-package anaconda-mode
   :ensure t
   :config
-  ;; 启用 anaconda 模式
-  (anaconda-mode)
-  ;; 启用 anaconda 的 eldoc 模式
-  (anaconda-eldoc-mode))
+  (add-hook 'python-mode-hook 'anaconda-mode)
+  (add-hook 'python-ts-mode-hook 'anaconda-mode)
+  (add-hook 'python-mode-hook 'anaconda-eldoc-mode)
+  (add-hook 'python-ts-mode-hook 'anaconda-eldoc-mode))
 
-;; ;; 如果你想使用语言服务器协议 (LSP)，可以安装并配置 lsp-python-ms
+;; 自动格式化 pep8
+(add-hook 'elpy-mode-hook 'py-autopep8-mode)
+(add-hook 'python-ts-mode-hook 'py-autopep8-mode)
+
 ;; (use-package lsp-python-ms
 ;;   :ensure t
 ;;   :config
-;;   ;; 在 Python 模式下启用 LSP
-;;   (add-hook 'python-mode-hook #'lsp))
+;;   (add-hook 'python-mode-hook #'lsp)
+;;   (add-hook 'python-ts-mode-hook #'lsp))
 
-(add-hook 'elpy-mode-hook 'py-autopep8-mode)
+;; pyenv 配置建议放到 lisp/init-third-packages.el
+(setenv "WORKON_HOME" "/home/tom/miniconda3/envs/")
 
 (provide 'custom)
 ;;;
