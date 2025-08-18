@@ -57,6 +57,7 @@
     (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
     (define-key global-map "\C-cc" 'org-capture)
     (add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
+    ;; 修正 org-capture-templates
     (setopt org-capture-templates
             '(("i" "Idea" entry (file+headline "~/Sync/orgmod/idea.org" "Idea")
                "* %?\n  %i\n  %a")
@@ -90,9 +91,8 @@
 (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
 
 ;; EasyPG
-(use-package epa-file
-  :config
-  (epa-file-enable))
+(require 'epa-file)
+(epa-file-enable)
 
 (use-package org-roam
   :ensure t
