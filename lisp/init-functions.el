@@ -70,20 +70,20 @@ falls back to `user-init-file'."
 ;;; Input methods --------------------------------------------------------------
 
 ;;;###autoload
-(defun input-chinese-methods ()
-  "Load and toggle the Chinese input method helpers from init-input-methods.
-This will `require' the `init-input-methods' feature (if present) then
-call `toggle-input-method'. Gives a friendly message if the helper file
-is not available."
-  (interactive)
-  (condition-case err
-      (progn
-        (require 'init-input-methods)
-        (if (fboundp 'toggle-input-method)
-            (toggle-input-method)
-          (user-error "`toggle-input-method' is not available")))
-    (error
-     (message "Could not enable Chinese input methods: %s" (error-message-string err)))))
+;; (defun input-chinese-methods ()
+;;   "Load and toggle the Chinese input method helpers from init-input-methods.
+;; This will `require' the `init-input-methods' feature (if present) then
+;; call `toggle-input-method'. Gives a friendly message if the helper file
+;; is not available."
+;;   (interactive)
+;;   (condition-case err
+;;       (progn
+;;         (require 'init-input-methods)
+;;         (if (fboundp 'toggle-input-method)
+;;             (toggle-input-method)
+;;           (user-error "`toggle-input-method' is not available")))
+;;     (error
+;;      (message "Could not enable Chinese input methods: %s" (error-message-string err)))))
 
 ;;; Tree-sitter helpers -------------------------------------------------------
 
