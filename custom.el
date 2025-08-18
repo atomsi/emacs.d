@@ -58,10 +58,10 @@
     (define-key global-map "\C-cc" 'org-capture)
     (add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
     ;; 修正 org-capture-templates
+	  
     (setopt org-capture-templates
             '(("i" "Idea" entry (file+headline "~/Sync/orgmod/idea.org" "Idea")
                "* %?\n  %i\n  %a")
-              ("d" "Diary" entry (file+datetree "~/Sync/orgmod/diary.org.gpg" "Diary")
                "* %?\nEntered on %U\n %i\n %a")
               ("r" "Reading" entry (file+headline "~/Sync/orgmod/reading.org")
                "* %?\n  %i\n  %a")
