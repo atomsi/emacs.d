@@ -1,2 +1,2 @@
 # emacs.d
-personal emacs configure files
+personal emacs 30 configure files
