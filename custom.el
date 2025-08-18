@@ -66,7 +66,7 @@
           ("r" "Reading" entry (file+headline "~/Sync/orgmod/reading.org" "Reading")
            "* %?\n  %i\n  %a")
           ("t" "Todo" entry (file+headline "~/Sync/orgmod/gtd.org" "Tasks")
-           "* TODO %?\n  %i\n  %a")))  
+           "* TODO %?\n  %i\n  %a")))
     (require 'org-tempo)))
 
 (use-package org-download
