@@ -9,19 +9,72 @@
 
 ;;; Code:
 
-;; 推荐 setopt，但 setq 兼容性更好
+;; 推荐 setopt（Emacs 30+）
 (setopt browse-url-browser-function 'browse-url-generic)
 (setopt browse-url-generic-program "google-chrome")
 
 (use-package ellama
+  :ensure t
+  :bind ("C-c e" . ellama)
+  ;; send last message in chat buffer with C-c C-c
+  :hook (org-ctrl-c-ctrl-c-final . ellama-chat-send-last-message)
   :init
+  ;; setup key bindings
+  ;; (setopt ellama-keymap-prefix "C-c e")
+  ;; language you want ellama to translate to
   (setopt ellama-language "Chinese")
-  :config
+  ;; could be llm-openai for example
   (require 'llm-ollama)
   (setopt ellama-provider
-	  (make-llm-ollama
-	   :chat-model "qwen2.5-coder:32b-instruct-q8_0"
-	   :embedding-model "qwen2.5-coder:32b-instruct-q8_0")))
+  	  (make-llm-ollama
+  	   ;; this model should be pulled to use it
+  	   ;; value should be the same as you print in terminal during pull
+  	   :chat-model "qwen3:14b"
+  	   :embedding-model "nomic-embed-text"
+  	   :default-chat-non-standard-params '(("num_ctx" . 8192))))
+  (setopt ellama-summarization-provider
+  	  (make-llm-ollama
+  	   :chat-model "qwen3:14b"
+  	   :embedding-model "nomic-embed-text"
+  	   :default-chat-non-standard-params '(("num_ctx" . 32768))))
+  (setopt ellama-coding-provider
+  	  (make-llm-ollama
+  	   :chat-model "qwen3-coder:30b-a3b-q8_0"
+  	   :embedding-model "nomic-embed-text"
+  	   :default-chat-non-standard-params '(("num_ctx" . 32768))))
+			 
+  ;; Naming new sessions with llm
+  (setopt ellama-naming-provider
+  	  (make-llm-ollama
+  	   :chat-model "qwen3:14b"
+  	   :embedding-model "nomic-embed-text"
+  	   :default-chat-non-standard-params '(("stop" . ("\n")))))
+  (setopt ellama-naming-scheme 'ellama-generate-name-by-llm)
+  ;; Translation llm provider
+  (setopt ellama-translation-provider
+  	  (make-llm-ollama
+  	   :chat-model "qwen3:14b"
+  	   :embedding-model "nomic-embed-text"
+  	   :default-chat-non-standard-params
+  	   '(("num_ctx" . 32768))))
+  (setopt ellama-extraction-provider (make-llm-ollama
+  				      :chat-model "qwen3-coder:30b-a3b-q8_0"
+  				      :embedding-model "nomic-embed-text"
+  				      :default-chat-non-standard-params
+  				      '(("num_ctx" . 32768))))
+  ;; customize display buffer behaviour
+  ;; see ~(info "(elisp) Buffer Display Action Functions")~
+  (setopt ellama-chat-display-action-function #'display-buffer-full-frame)
+  (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
+  :config
+  ;; show ellama context in header line in all buffers
+  (ellama-context-header-line-global-mode +1)
+  ;; show ellama session id in header line in all buffers
+  (ellama-session-header-line-global-mode +1)
+  ;; handle scrolling events
+  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
+  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
+
 
 ;;;;; PYIM 输入法配置
 (use-package pyim
@@ -33,7 +86,7 @@
           '((:name "pyim-tsinghua"
                    :file "~/.emacs.d/eim/pyim-tsinghua-dict.pyim")))
   (setopt pyim-cloudim 'baidu)
-  (pyim-default-scheme 'quanpin)
+  (setopt pyim-default-scheme 'quanpin)
   :config
   (global-set-key (kbd "C-\\") 'toggle-input-method))
 
@@ -43,8 +96,8 @@
   :init
   (setopt org-image-actual-width nil
           org-startup-indented t
-          org-log-done 'note)
-  (setopt org-todo-keywords
+          org-log-done 'note
+          org-todo-keywords
           '((sequence "TODO(t!)" "WAIT(w)" "|" "DONE(d!)" "CANCELED(c@/!)")))
   :config
   (with-eval-after-load 'org
@@ -56,17 +109,17 @@
     (setopt org-plantuml-jar-path (expand-file-name "/usr/share/plantuml/plantuml.jar"))
     (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
     (define-key global-map "\C-cc" 'org-capture)
-    (add-hook 'org-mode-hook (lambda () (setq truncate-lines nil)))
+    (add-hook 'org-mode-hook (lambda () (setopt truncate-lines nil)))
     ;; 修正 org-capture-templates
-    (setq org-capture-templates
-	  '(("i" "Idea" entry (file+headline "~/Sync/orgmod/idea.org" "Idea")
-             "* %?\n  %i\n  %a")
-            ("d" "Diary" entry (file+olp+datetree "~/Sync/orgmod/diary.org.gpg")
-             "* %?\nEntered on %U\n %i\n %a")
-            ("r" "Reading" entry (file+headline "~/Sync/orgmod/reading.org" "Reading")
-             "* %?\n  %i\n  %a")
-            ("t" "Todo" entry (file+headline "~/Sync/orgmod/gtd.org" "Tasks")
-             "* TODO %?\n  %i\n  %a")))
+    (setopt org-capture-templates
+            '(("i" "Idea" entry (file+headline "~/Sync/orgmod/idea.org" "Idea")
+               "* %?\n  %i\n  %a")
+              ("d" "Diary" entry (file+olp+datetree "~/Sync/orgmod/diary.org.gpg")
+               "* %?\nEntered on %U\n %i\n %a")
+              ("r" "Reading" entry (file+headline "~/Sync/orgmod/reading.org" "Reading")
+               "* %?\n  %i\n  %a")
+              ("t" "Todo" entry (file+headline "~/Sync/orgmod/gtd.org" "Tasks")
+               "* TODO %?\n  %i\n  %a")))
     (require 'org-tempo)))
 
 (use-package org-download
