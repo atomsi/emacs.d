@@ -13,6 +13,7 @@
 (setopt browse-url-browser-function 'browse-url-generic)
 (setopt browse-url-generic-program "google-chrome")
 
+
 (use-package ellama
   :ensure t
   :bind ("C-c e" . ellama)
@@ -26,22 +27,52 @@
   ;; could be llm-openai for example
   (require 'llm-ollama)
   (setopt ellama-provider
-  	  (make-llm-ollama
-  	   ;; this model should be pulled to use it
-  	   ;; value should be the same as you print in terminal during pull
-  	   :chat-model "qwen3:14b"
-  	   :embedding-model "nomic-embed-text"
-  	   :default-chat-non-standard-params '(("num_ctx" . 8192))))
+          (make-llm-ollama
+           :chat-model "qwen3:14b"
+           :embedding-model "nomic-embed-text"
+           :default-chat-non-standard-params '(("num_ctx" . 40000))))
   (setopt ellama-summarization-provider
-  	  (make-llm-ollama
-  	   :chat-model "qwen3:14b"
-  	   :embedding-model "nomic-embed-text"
-  	   :default-chat-non-standard-params '(("num_ctx" . 32768))))
+          (make-llm-ollama
+           :chat-model "qwen3:14b"
+           :embedding-model "nomic-embed-text"
+           :default-chat-non-standard-params '(("num_ctx" . 40000))))
   (setopt ellama-coding-provider
-  	  (make-llm-ollama
-  	   :chat-model "qwen3-coder:30b-a3b-q8_0"
-  	   :embedding-model "nomic-embed-text"
-  	   :default-chat-non-standard-params '(("num_ctx" . 32768))))
+          (make-llm-ollama
+           :chat-model "qwen3-coder:30b-a3b-q8_0"
+           :embedding-model "nomic-embed-text"
+           :default-chat-non-standard-params '(("num_ctx" . 256000))))
+  ;; Naming new sessions with llm
+  (setopt ellama-naming-provider
+          (make-llm-ollama
+           :chat-model "qwen3:14b"
+           :embedding-model "nomic-embed-text"
+           :default-chat-non-standard-params '(("stop" . ("\n")))))
+  (setopt ellama-naming-scheme 'ellama-generate-name-by-llm)
+  ;; Translation llm provider
+  (setopt ellama-translation-provider
+          (make-llm-ollama
+           :chat-model "qwen3:14b"
+           :embedding-model "nomic-embed-text"
+           :default-chat-non-standard-params
+           '(("num_ctx" . 40000))))
+  (setopt ellama-extraction-provider (make-llm-ollama
+                                      :chat-model "qwen3-coder:30b-a3b-q8_0"
+                                      :embedding-model "dengcao/Qwen3-Embedding-4B:Q8_0"
+                                      :default-chat-non-standard-params
+                                      '(("num_ctx" . 256000))))
+  ;; customize display buffer behaviour
+  ;; see ~(info "(elisp) Buffer Display Action Functions")~
+  (setopt ellama-chat-display-action-function #'display-buffer-full-frame)
+  (setopt ellama-instant-display-action-function #'display-buffer-at-bottom)
+  :config
+  ;; show ellama context in header line in all buffers
+  (ellama-context-header-line-global-mode +1)
+  ;; show ellama session id in header line in all buffers
+  (ellama-session-header-line-global-mode +1)
+  ;; handle scrolling events
+  (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
+  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
+
 			 
   ;; Naming new sessions with llm
   (setopt ellama-naming-provider
