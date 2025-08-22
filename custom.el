@@ -71,9 +71,7 @@
   (ellama-session-header-line-global-mode +1)
   ;; handle scrolling events
   (advice-add 'pixel-scroll-precision :before #'ellama-disable-scroll)
-  (advice-add 'end-of-buffer :after #'ellama-enable-scroll))
-
-			 
+  (advice-add 'end-of-buffer :after #'ellama-enable-scroll)
   ;; Naming new sessions with llm
   (setopt ellama-naming-provider
   	  (make-llm-ollama
