@@ -24,5 +24,6 @@
 (provide 'early-init)
 
 ;;; early-init.el ends here
-;; Local Variables:
-;; byte-compile-warnings: (not free-vars)
+;;; Local Variables:
+;;; byte-compile-warnings: (not free-vars)
+
