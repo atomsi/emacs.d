@@ -48,6 +48,7 @@
 
 ;;; init.el ends here
 ;;; Local Variables:
-;; coding: utf-8
-;; byte-compile-warnings: (not unresolved obsolete)
-;; End:
+;;; coding: utf-8
+;;; byte-compile-warnings: (not unresolved obsolete)
+;;; End:
+
