@@ -22,22 +22,22 @@
 
   ;; 设置不同功能的provider
   (setopt ellama-provider
-          (my-llm-ollama "qwen3:14b" nil 40000))
+          (my-llm-ollama "qwen3-coder:30b-a3b-q8_0" nil 40000))
 
   (setopt ellama-summarization-provider
-          (my-llm-ollama "qwen3:14b" nil 40000))
+          (my-llm-ollama "qwen3-coder:30b-a3b-q8_0" nil 40000))
 
   (setopt ellama-coding-provider
           (my-llm-ollama "qwen3-coder:30b-a3b-q8_0" nil 256000))
 
   ;; 会话命名设置
   (setopt ellama-naming-provider
-          (my-llm-ollama "qwen3:14b" nil nil))
+          (my-llm-ollama "qwen3-coder:30b-a3b-q8_0" nil nil))
   (setopt ellama-naming-scheme 'ellama-generate-name-by-llm)
 
   ;; 翻译功能设置
   (setopt ellama-translation-provider
-          (my-llm-ollama "qwen3:14b" nil 32768)) ;; 使用较小的上下文窗口提升速度
+          (my-llm-ollama "qwen3-coder:30b-a3b-q8_0" nil 32768)) ;; 使用较小的上下文窗口提升速度
 
   ;; 提取功能设置
   (setopt ellama-extraction-provider
