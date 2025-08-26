@@ -8,11 +8,14 @@
 (defconst cabins-os-mac (eq system-type 'darwin))
 
 ;; 字体设置
-(defconst font-name "Maple Mono Normal NF CN")
+;; UTF-8
+(set-language-environment "UTF-8")
+(setopt locale-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+
 (defconst font-size 18) ;; 可按需调整
-(if (find-font (font-spec :family font-name))
-    (set-face-attribute 'default nil :family font-name :height (* font-size 10))
-  (message "Warning: Font '%s' not found. Using default font." font-name))
 
 ;; lisp 目录加入 load-path（需目录存在）
 (let ((lisp-dir (concat user-emacs-directory "lisp")))
@@ -39,6 +42,12 @@
       (require file)
     (error (message "Could not load %s: %s" file err))))
 
+;; 功能
+(require 'init-pyim)
+(require 'init-ellama)
+(require 'init-org)
+(require 'init-dev)
+
 ;; custom.el 的设置与加载
 (setq custom-file (locate-user-emacs-file "custom.el"))
 (when (file-exists-p custom-file)
@@ -51,4 +60,3 @@
 ;;; coding: utf-8
 ;;; byte-compile-warnings: (not unresolved obsolete)
 ;;; End:
-
