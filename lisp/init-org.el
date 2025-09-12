@@ -1,4 +1,8 @@
 ;;; init-org.el --- -*- lexical-binding: t; -*-
+(require 'org)
+(require 'org-capture)
+(require 'url-handlers) ; 避免 org-download 编译警告
+
 (use-package org
   :ensure t
   :defer t
@@ -34,6 +38,13 @@
   :bind (("C-S-y" . org-download-screenshot))
   :hook (dired-mode . org-download-enable))
 
+;; display the images embedded
+(add-hook 'org-mode-hook
+          (lambda () (run-at-time 0.1 nil #'org-display-inline-images)))
+(advice-add 'org-download-image :after
+            (lambda (&rest _) (org-display-inline-images)))
+(setq org-image-actual-width nil)
+
 (use-package org-roam
   :ensure t
   :defer t
@@ -66,6 +77,8 @@
 
 ;; 打开 pdf 用 pdf-view-mode
 (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
+
+
 
 (provide 'init-org)
 ;;; init-org.el ends here
