@@ -1,50 +1,87 @@
-;;; init-org.el --- -*- lexical-binding: t; -*-
-(require 'org)
-(require 'org-capture)
-(require 'url-handlers) ; 避免 org-download 编译警告
+;;; init-org.el  --- Linux + Emacs 30 专用，无兼容、无自动建目录 -*- lexical-binding: t; -*-
+
+(require 'url-handlers)                 ; 抑制 org-download 编译警告
 
 (use-package org
   :ensure t
   :defer t
-  :hook (org-mode . (lambda () (setq truncate-lines nil)))
+  :hook (org-mode . (lambda ()
+                      (setq truncate-lines nil)
+                      (abbrev-mode 1)))
   :custom
-  (org-image-actual-width nil)
   (org-startup-indented t)
   (org-log-done 'note)
   (org-todo-keywords '((sequence "TODO(t!)" "WAIT(w)" "|" "DONE(d!)" "CANCELED(c@/!)")))
-  (org-plantuml-jar-path (or (executable-find "plantuml")
-                             "/usr/share/plantuml/plantuml.jar"))
+  (org-plantuml-jar-path
+   (or (let* ((exe (executable-find "plantuml"))
+              (jar (and exe (expand-file-name "plantuml.jar"
+                                              (file-name-directory exe)))))
+         (and (file-exists-p jar) jar))
+       "~/.emacs.d/plugin/plantuml.jar"))
+  (org-babel-results-keyword "results")
   :config
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((ditaa . t)
+   '((emacs-lisp . t)
+     (ditaa . t)
+     (python . t)
+     (shell . t)
+     (latex . t)
      (plantuml . t)
-     (dot . t)))
+     (dot . t)
+     (lisp . t)
+     (org . t)
+     (java . t)))
 
   (require 'org-tempo)
 
-  (setopt org-capture-templates
-          '(("i" "Idea"  entry (file+headline "~/Sync/orgmod/idea.org" "Idea")
-             "* %?\n  %i\n  %a")
-            ("d" "Diary" entry (file+olp+datetree "~/Sync/orgmod/diary.org.gpg")
-             "* %?\nEntered on %U\n %i\n %a")
-            ("r" "Reading" entry (file+headline "~/Sync/orgmod/reading.org" "Reading")
-             "* %?\n  %i\n  %a")
-            ("t" "Todo" entry (file+headline "~/Sync/orgmod/gtd.org" "Tasks")
-             "* TODO %?\n  %i\n  %a"))))
+  (global-set-key (kbd "C-c c") #'org-capture)
+  (setq org-capture-templates
+        '(("i" "Idea"  entry (file+headline "~/Sync/orgmod/idea.org" "Idea")
+           "* %?\n  %i\n  %a")
+          ("d" "Diary" entry (file+olp+datetree "~/Sync/orgmod/diary.org.gpg")
+           "* %?\nEntered on %U\n %i\n %a")
+          ("r" "Reading" entry (file+headline "~/Sync/orgmod/reading.org" "Reading")
+           "* %?\n  %i\n  %a")
+          ("t" "Todo" entry (file+headline "~/Sync/orgmod/gtd.org" "Tasks")
+           "* TODO %?\n  %i\n  %a")))
 
+  (defun atom/display-inline-images ()
+    (condition-case nil
+        (org-display-inline-images)
+      (error nil)))
+  (add-hook 'org-babel-after-execute-hook #'atom/display-inline-images))
+
+;; ------------------------------------------------------------------
+;; org-download
+;; ------------------------------------------------------------------
 (use-package org-download
   :ensure t
   :bind (("C-S-y" . org-download-screenshot))
   :hook (dired-mode . org-download-enable))
 
-;; display the images embedded
-(add-hook 'org-mode-hook
-          (lambda () (run-at-time 0.1 nil #'org-display-inline-images)))
-(advice-add 'org-download-image :after
-            (lambda (&rest _) (org-display-inline-images)))
-(setq org-image-actual-width nil)
+(defun my-org-setup-inline-images ()
+  (org-display-inline-images))
+(add-hook 'org-mode-hook #'my-org-setup-inline-images)
+(advice-add 'org-download-image :after #'org-display-inline-images)
 
+(setq org-confirm-babel-evaluate nil)
+
+;; ------------------------------------------------------------------
+;; PlantUML 骨架缩写
+;; ------------------------------------------------------------------
+(define-skeleton skel-org-block-plantuml
+  "Insert a org plantuml block, querying for filename."
+  "File (no extension): "
+  "#+begin_src plantuml :file " str ".png :cache yes :cmdline -charset UTF-8\n"
+  "title \n"
+  "#+end_src\n")
+(with-eval-after-load 'org
+  (define-abbrev org-mode-abbrev-table "spuml" "" 'skel-org-block-plantuml))
+
+;; ------------------------------------------------------------------
+;; org-roam + org-roam-ui
+;; ------------------------------------------------------------------
 (use-package org-roam
   :ensure t
   :defer t
@@ -70,15 +107,18 @@
   (org-roam-ui-follow t)
   (org-roam-ui-update-on-save t))
 
+;; ------------------------------------------------------------------
 ;; EasyPG
+;; ------------------------------------------------------------------
 (require 'epa-file)
-(setq epa-file-name-regexp  "\\.org\\.gpg\\'")
+(setq epa-file-name-regexp "\\.org\\.gpg\\'")
 (epa-file-enable)
 
-;; 打开 pdf 用 pdf-view-mode
-(add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode))
-
-
+;; ------------------------------------------------------------------
+;; pdf-tools
+;; ------------------------------------------------------------------
+(with-eval-after-load 'pdf-tools
+  (add-to-list 'auto-mode-alist '("\\.pdf\\'" . pdf-view-mode)))
 
 (provide 'init-org)
 ;;; init-org.el ends here
