@@ -21,10 +21,6 @@
   (org-babel-results-keyword "results")
 
   :config
-  ;; 添加 keybinding 到 config 部分
-  (define-key org-mode-map (kbd "×") (kbd "*"))
-  (define-key org-mode-map (kbd "－") (kbd "-"))
-
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
