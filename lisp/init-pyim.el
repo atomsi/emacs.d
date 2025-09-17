@@ -23,7 +23,7 @@
   ;;(define-key input-method-map (kbd "C-.") #'atom/pyim-toggle-punctuation)
 
   ;; 2. 额外绑定全局快捷键（备选，即使输入法未激活也能触发）
-  (global-set-key (kbd "C-.") #'atom/pyim-toggle-punctuation)
+  (global-set-key (kbd "C-]") #'atom/pyim-toggle-punctuation)
 
   ;; 切换输入法的快捷键（保持不变）
   (global-set-key (kbd "C-\\") #'toggle-input-method))
