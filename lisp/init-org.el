@@ -19,7 +19,12 @@
          (and (file-exists-p jar) jar))
        "~/.emacs.d/plugin/plantuml.jar"))
   (org-babel-results-keyword "results")
+
   :config
+  ;; 添加 keybinding 到 config 部分
+  (define-key org-mode-map (kbd "×") (kbd "*"))
+  (define-key org-mode-map (kbd "－") (kbd "-"))
+
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -74,7 +79,10 @@
   "Insert a org plantuml block, querying for filename."
   "File (no extension): "
   "#+begin_src plantuml :file " str ".png :cache yes :cmdline -charset UTF-8\n"
-  "title \n"
+  "@startuml\n"
+  "title **" str "**\n"
+  "autonumber\n"
+  "@enduml\n"
   "#+end_src\n")
 (with-eval-after-load 'org
   (define-abbrev org-mode-abbrev-table "spuml" "" 'skel-org-block-plantuml))
