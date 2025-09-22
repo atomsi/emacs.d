@@ -93,7 +93,8 @@
          ("C-c r i" . org-roam-node-insert)
          ("C-c r c" . org-roam-capture)
          ("C-c r b" . org-roam-buffer-toggle)
-         ("C-c r d" . org-roam-dailies-map))
+         ("C-c r d" . org-roam-dailies-map)
+	 ("C-c r u" . org-roam-ui-mode))
   :custom
   (org-roam-directory "~/Sync/orgmod/roam")
   (org-roam-dailies-directory "daily/")
