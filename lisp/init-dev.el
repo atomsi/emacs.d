@@ -17,6 +17,11 @@
   :ensure t
   :after consult)
 
+;; magit
+(use-package magit
+  :ensure t
+  :defer t)
+
 ;; Python
 (use-package lsp-pyright
   :ensure t
