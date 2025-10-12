@@ -42,7 +42,19 @@
       (require file)
     (error (message "Could not load %s: %s" file err))))
 
-;; 功能
+
+(use-package vertico ;; 补全界面优化, 提供候选清单
+  :ensure t
+  :config
+  (vertico-mode))
+(use-package orderless ;; 无序搜索
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+;; 功能模块
 (require 'init-pyim)
 (require 'init-ellama)
 (require 'init-org)
